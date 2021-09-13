@@ -196,7 +196,7 @@ main(){
     			l1 += -1;
     			cout << "\nType the multiplier numerator: ";
     			cin >> multiplier_num;
-    			cout << "\nType the multiplier denominator: ";
+    			cout << "Type the multiplier denominator: ";
     			cin >> multiplier_den;
     			f_multiplier_num *= multiplier_num;
     			f_multiplier_den *= multiplier_den;
