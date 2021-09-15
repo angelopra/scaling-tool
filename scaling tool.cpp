@@ -271,7 +271,7 @@ main(){
 	for(i = 0; i < range; i++){
        	cout << endl;
         for(j = 0; j < range; j++){
-           	if(matrix[i][j][1] == 1){
+           	if(matrix[i][j][1] == 1 || matrix[i][j][0] == 0){
         		cout << matrix[i][j][0] << "     ";
 			}
 			else cout << matrix[i][j][0] << "/" << matrix[i][j][1] << "   ";
@@ -300,4 +300,3 @@ main(){
 	cout << "\n\n=============================\n\n";
 	cin >> sus;
 }
-
