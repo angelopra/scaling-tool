@@ -2,12 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TRUE 1
-#define FALSE 0
-
 using namespace std;
 
-fraction_builder(int *num, int *den, char string[20]){ // stdlib needed
+void fraction_builder(int *num, int *den, char string[20]){ // stdlib.h and string.h needed
 	char a[10], b[10];
 	int len, i, j, n, d;
 	
@@ -30,10 +27,8 @@ fraction_builder(int *num, int *den, char string[20]){ // stdlib needed
 	}
 	else d = atoi(b);
 	
-	
 	*num = n;
 	*den = d;
-	
 }
 
 int lcm(int n1, int n2){
@@ -53,7 +48,7 @@ int lcm(int n1, int n2){
     return (n1 * n2) / a;
 }
 
-add_fraction(int *numerator, int *denominator, int nb, int db){
+void add_fraction(int *numerator, int *denominator, int nb, int db){
 	int na, da, m;
 	
 	na = *numerator;
@@ -68,7 +63,7 @@ add_fraction(int *numerator, int *denominator, int nb, int db){
 	*denominator = m;
 }
 
-simplify_fraction(int *n, int *d){
+void simplify_fraction(int *n, int *d){
 	int num, den, signal_n = 1, signal_d = 1;
 	int num_f = 1, den_f = 1;
 	int i, x = 3, list_num[20], list_den[20], j = 0, count_num = 0, count_den = 0;
@@ -145,77 +140,74 @@ simplify_fraction(int *n, int *d){
 	
 	*n = signal_n*num_f;
 	*d = signal_d*den_f;
-	
 }
 
-int superior_triangular_verifier(int matrix[10][10][2], int range){
-	int i, k, quality = TRUE;
+bool upper_triangular_verifier(int matrix[10][10][2], int range_i){
+	int i, k;
+	bool quality = true;
 	
-	for(i = 0; i < range; i++){
-		if(matrix[i][i][0] != 0){
-			for(k = i+1; k < range; k++){
-				if(matrix[k][i][0] != 0){
-					quality = FALSE; break;
-				}
+	for(i = 0; i < range_i; i++){
+		for(k = i+1; k < range_i; k++){
+			if(matrix[k][i][0] != 0){
+				quality = false; break;
 			}
 		}
-		else{
-			quality = FALSE; break;
-		}
 	}
+	
 	return quality;
 }
 
 main(){
-	int range, i, j = 0, option, l1, l2, signal = 1, count = 1, sus;
+	int range_i, range_j, i, j = 0, l1, l2, signal = 1, count = 1;
 	int matrix[10][10][2];
 	int determinant_num = 1, determinant_den = 1, multiplier_num = 1, multiplier_den = 1, f_multiplier_num = 1, f_multiplier_den = 1;
-	char string[20];
+	char string[20], option, sus;
 	
 	cout << "=============================\n";
 	cout << "        Scaling tool\n";
 	cout << "=============================\n";
-	cout << "\nMatrix range: ";
-	cin >> range;
-	cout << "\nType the elements in reading order:\n";
+	cout << "\n Number of rows: ";
+	cin >> range_i;
+	cout << "       collumns: ";
+	cin >> range_j;
+	cout << "\n Type the elements in reading order:\n";
 	
-	for(i = 0; i < range; i++){
-        cout << "\nRow " << i+1 << ":\n";
-        for(j = 0; j < range; j++){
+	for(i = 0; i < range_i; i++){
+        cout << "\n Row " << i+1 << ":\n";
+        for(j = 0; j < range_j; j++){
+        	cout << " ";
         	cin >> string;
         	fraction_builder(&matrix[i][j][0], &matrix[i][j][1], string);
 			}
     }
     
-    while(not superior_triangular_verifier(matrix, range)){
+    while(option != '5'){
     	cout << "\n=============================\n";
-    	cout << "\nMatrix(" << count << "):\n";
-		for(i = 0; i < range; i++){
+    	cout << "\n Matrix(" << count << "):\n";
+		for(i = 0; i < range_i; i++){
         	cout << endl;
-        	for(j = 0; j < range; j++){
+        	for(j = 0; j < range_j; j++){
         		simplify_fraction(&matrix[i][j][0], &matrix[i][j][1]);
         		if(matrix[i][j][1] == 1){
-        			cout << matrix[i][j][0] << "     ";
+        			printf("  %5d", matrix[i][j][0]);
 				}
-				else cout << matrix[i][j][0] << "/" << matrix[i][j][1] << "   ";
+				else printf("  %3d/%d", matrix[i][j][0], matrix[i][j][1]);
         	}
   		}
-  		count++;
   		
-    	cout << "\n\nSelect the operation:\n";
-    	cout << "(1) to swap lines, (2) to multiply the line, (3) to replace the line: ";
+    	cout << "\n\n Select the operation:\n";
+    	cout << " (1) swap lines, (2) multiply the line, (3) replace the line\n (4) calculate determinant, (5) to exit: ";
     	cin >> option;
     	
     	switch(option){
-    		case 1: // swap lines
-    			
-    			cout << "\nSelect the lines to swap: ";
+    		case '1': // swap lines
+    			cout << "\n Select the lines to swap: ";
     			cin >> l1;
     			cin >> l2;
     			l1 += -1;
     			l2 += -1;
     			
-    			for(j = 0; j < range; j++){
+    			for(j = 0; j < range_j; j++){
     				i = matrix[l1][j][0];
     				matrix[l1][j][0] = matrix[l2][j][0];
     				matrix[l2][j][0] = i;
@@ -224,79 +216,85 @@ main(){
     				matrix[l2][j][1] = i;
 				}
 				signal *= -1;
+    			count++;
     			
     			break;
-    		case 2: // multiply line
     			
-    			cout << "\nSelect the line to multiply: ";
+    		case '2': // multiply line
+    			cout << "\n Select the line to multiply: ";
     			cin >> l1;
     			l1 += -1;
-    			cout << "\nType the multiplier: ";
+    			
+    			cout << "\n Type the multiplier: ";
     			cin >> string;
+    			
     			fraction_builder(&multiplier_num, &multiplier_den, string);
     			f_multiplier_num *= multiplier_num;
     			f_multiplier_den *= multiplier_den;
     			
-    			for(j = 0; j < range; j++){
+    			for(j = 0; j < range_j; j++){
     				matrix[l1][j][0] *= multiplier_num;
 				}
-				for(j = 0; j < range; j++){
+				for(j = 0; j < range_j; j++){
     				matrix[l1][j][1] *= multiplier_den;
 				}
+				count++;
 
     			break;
-    		case 3: // replace line
     			
-				cout << "\nSelect the line to multiply: ";
+    		case '3': // replace line
+				cout << "\n Select the line to multiply: ";
 				cin >> l1;
 				l1 += -1;
-				cout << "\nType the multiplier: ";
+				
+				cout << "\n Type the multiplier: ";
 				cin >> string;
 				fraction_builder(&multiplier_num, &multiplier_den, string);
-				cout << "\nSelect the line to add and replace: ";
+				
+				cout << "\n Select the line to add and replace: ";
 				cin >> l2;
 				l2 += -1;
 				
-				for(j = 0; j < range; j++){
+				for(j = 0; j < range_j; j++){
 					add_fraction(&matrix[l2][j][0], &matrix[l2][j][1], multiplier_num*matrix[l1][j][0], multiplier_den*matrix[l1][j][1]);
 				}
+				count++;
 				
     			break;
+    			
+    		case '4': // calculate determinant
+    			if(upper_triangular_verifier(matrix, range_i)){
+					for(i = 0; i < range_i; i++){
+						determinant_num *= matrix[i][i][0];
+					}
+					for(i = 0; i < range_i; i++){
+						determinant_den *= matrix[i][i][1];
+					}
+					simplify_fraction(&determinant_num, &determinant_den);
+					
+					if(determinant_den == 1) cout << "\n Matrix(" << count << ") Determinant: " << determinant_num;
+					else cout << "\n Matrix(" << count << ") Determinant: " << determinant_num << "/" << determinant_den;
+					
+					determinant_num *= signal * f_multiplier_den;
+					determinant_den *= f_multiplier_num;
+					
+					simplify_fraction(&determinant_num, &determinant_den);
+					
+					if(determinant_den == 1 || determinant_den == -1) cout << "\n\n Original matrix Determinant: " << determinant_num << endl;
+					else cout << "\n\n Original matrix Determinant: " << determinant_num << "/" << determinant_den << endl;
+				}
+				else{
+					cout << "\n Matrix is not upper triangular\n";
+				}
+    			break;
+    			
+    		case '5': // exit
+    			break;
+    			
+    		default: cout << "\n Invalid option\n";
 		}
 	}
-	
-	cout << "\n\n=============================\n\n";
-    cout << "Superior triangular Matrix(" << count << "):\n";
-    
-	for(i = 0; i < range; i++){
-       	cout << endl;
-        for(j = 0; j < range; j++){
-           	if(matrix[i][j][1] == 1 || matrix[i][j][0] == 0){
-        		cout << matrix[i][j][0] << "     ";
-			}
-			else cout << matrix[i][j][0] << "/" << matrix[i][j][1] << "   ";
-        }
-  	}
-  	
-	for(i = 0; i < range; i++){
-		determinant_num *= matrix[i][i][0];
-	}
-	for(i = 0; i < range; i++){
-		determinant_den *= matrix[i][i][1];
-	}
-	
-	simplify_fraction(&determinant_num, &determinant_den);
-	
-	if(determinant_den == 1) cout << "\n\nMatrix(" << count << ") Determinant: " << determinant_num;
-	else cout << "\n\nMatrix(" << count << ") Determinant: " << determinant_num << "/" << determinant_den;
-	
-	determinant_num *= signal * f_multiplier_den;
-	determinant_den *= f_multiplier_num;
-	
-	simplify_fraction(&determinant_num, &determinant_den);
-	
-	if(determinant_den == 1) cout << "\n\nOriginal matrix Determinant: " << determinant_num;
-	else cout << "\n\nOriginal matrix Determinant: " << determinant_num << "/" << determinant_den;
-	cout << "\n\n=============================\n\n";
-	cin >> sus;
+	cout << "\n=============================\n";
+    cout << "\n Program terminated\n ";
+    return 0;
 }
